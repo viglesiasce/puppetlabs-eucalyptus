@@ -20,9 +20,14 @@
 #
 # Copyright 2012 Eucalyptus INC under the Apache 2.0 license
 #
-class eucalyptus 
+class eucalyptus ( $euca2ools_url  = $eucalyptus::repo::defaults::euca2ools_url,
+     			   $eucalyptus_url = $eucalyptus::repo::defaults::eucalyptus_url)
 {
-  include eucalyptus::repo, eucalyptus::extrarepo
+  include eucalyptus::extrarepo
   include eucalyptus::security
+  class{"eucalyptus::repo": 
+  		euca2ools_url => $euca2ools_url,
+  		eucalyptus_url => $eucalyptus_url
+  }
 }
 

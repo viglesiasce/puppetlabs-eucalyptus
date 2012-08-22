@@ -1,0 +1,5 @@
+auto lo 
+iface lo inet loopback
+auto <%= bridge_name  %>  
+iface <%= bridge_name  %> inet dhcp
+    bridge_ports <%= physical_interface  %>

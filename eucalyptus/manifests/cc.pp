@@ -1,8 +1,16 @@
-class eucalyptus::cc ($cloud_name = "cloud1", $cluster_name = "cluster1" ) {
-
-  Class['eucalyptus'] -> Class[eucalyptus::cc]
+class eucalyptus::cc ($cloud_name = "cloud1", $cluster_name = "cluster1", 
+					  $euca2ools_url  = $eucalyptus::repo::defaults::euca2ools_url,
+     			   	  $eucalyptus_url = $eucalyptus::repo::defaults::eucalyptus_url) {
 
   include eucalyptus::conf
+  Class['eucalyptus'] -> Class[eucalyptus::cc]
+  if ! defined(Class["eucalyptus"]) {
+	class{"eucalyptus": 
+  		euca2ools_url => $euca2ools_url,
+  		eucalyptus_url => $eucalyptus_url
+  	}
+  }
+  
 
   class eucalyptus::cc_install {
     package { 'eucalyptus-cc':
@@ -22,11 +30,10 @@ class eucalyptus::cc ($cloud_name = "cloud1", $cluster_name = "cluster1" ) {
     File <<|title == "${cloud_name}-${cluster_name}-nc-cert"|>>
     File <<|title == "${cloud_name}-${cluster_name}-nc-pk"|>>
     Package[eucalyptus-cc] -> Eucalyptus_config<||> -> Service[eucalyptus-cc]
-    Eucalyptus_config <||>
   }
 
   class eucalyptus::cc_reg {
-    Class[eucalyptus::cc_reg] -> Class[eucalyptus::cc_config]
+    Package <||> -> Class[eucalyptus::cc_reg] -> Class[eucalyptus::cc_config]
     @@exec { "reg_cc_${hostname}":
       command => "/usr/sbin/euca_conf --no-rsync --no-scp --no-sync --register-cluster --partition $cluster_name --host $ipaddress --component cc_$hostname",
       unless  => "/usr/sbin/euca_conf --list-clusters | /bin/grep -q '\b$ipaddress\b'",
