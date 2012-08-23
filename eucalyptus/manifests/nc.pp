@@ -22,7 +22,7 @@ class eucalyptus::nc ($cloud_name = "cloud1",
   #Eucalyptus_config <||> { notify => Service["eucalyptus-nc"] }
    # Causes too many service refreshes
   Eucalyptus_config <||>
-  @@exec { "${cluster_name}_reg_nc":
+  @@exec { "${cluster_name}_reg_nc_${hostname}":
     command => "/usr/sbin/euca_conf --no-rsync --no-sync --no-scp --register-nodes $ipaddress",
     unless  => "/bin/grep -i '\b$ipaddress\b' /etc/eucalyptus/eucalyptus.conf",
     tag     => "${cloud_name}_${cluster_name}_reg_nc",
